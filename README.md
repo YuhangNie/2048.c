@@ -6,10 +6,23 @@
 
 2048是一个数字拼图游戏，玩家通过滑动瓦片合并相同数字，目标是创建一个值为2048的瓦片。本项目提供了一个完整的C语言实现，包含游戏逻辑、用户界面和测试模块。
 
+该项目已经重构为标准的C项目结构，使用CMake作为构建系统，具有良好的模块化设计和完整的测试支持。
+
+### 项目特点
+
+- **模块化设计**：游戏逻辑、用户界面和主程序完全分离
+- **CMake构建系统**：支持跨平台编译和现代C开发工作流
+- **静态库**：游戏逻辑编译为静态库，便于测试和复用
+- **完整测试**：包含自动化单元测试
+- **多种颜色主题**：支持三种不同的视觉风格
+- **标准C99**：遵循C99标准，具有良好的兼容性
+
 ## 项目结构
 
 ```
 2048/
+├── .git/                   # Git版本控制目录
+├── .gitignore             # Git忽略文件配置
 ├── CMakeLists.txt          # CMake构建配置文件
 ├── README.md               # 项目说明文档
 ├── LICENSE                 # 许可证文件
@@ -22,9 +35,10 @@
 │   └── ui.c               # 用户界面实现
 ├── tests/                 # 测试代码目录
 │   └── test_game.c        # 游戏测试用例
-└── build/                 # 构建输出目录
+└── build/                 # 构建输出目录（gitignore忽略）
     ├── 2048               # 主程序可执行文件
     ├── 2048_test          # 测试程序可执行文件
+    ├── libgame_lib.a      # 静态链接库
     └── ...                # 其他构建文件
 ```
 
@@ -41,29 +55,30 @@
 
 1. **克隆或下载项目**
    ```bash
-   cd /path/to/2048
+   git clone https://github.com/YuhangNie/2048.c.git
+   cd 2048.c
    ```
 
-2. **创建构建目录**
+2. **创建构建目录并编译**
    ```bash
    mkdir -p build
    cd build
-   ```
-
-3. **配置CMake**
-   ```bash
    cmake ..
+   make
    ```
 
-4. **编译项目**
+   或者使用一行命令：
    ```bash
-   make
+   cmake -B build && make -C build
    ```
 
 ### 运行游戏
 
+确保在`build`目录中执行以下命令：
+
 1. **运行标准游戏**
    ```bash
+   cd build
    ./2048
    ```
 
@@ -86,6 +101,8 @@
 5. **运行测试**
    ```bash
    ./2048 test
+   # 或者运行专门的测试程序
+   ./2048_test
    ```
 
 ### 游戏控制
@@ -448,13 +465,52 @@ int main(int argc, char *argv[])
 ## 项目特点
 
 1. **模块化设计**：游戏逻辑、用户界面和主程序分离
-2. **跨平台兼容**：使用标准C库和POSIX接口
-3. **内存高效**：使用8位整数存储游戏状态
-4. **丰富的视觉效果**：支持多种颜色主题
-5. **完整的测试**：包含自动化测试验证游戏逻辑
-6. **灵活的构建系统**：使用CMake支持多种编译器
+2. **现代C项目结构**：使用标准的include/src/tests目录结构
+3. **CMake构建系统**：支持跨平台编译和现代开发工作流
+4. **静态库架构**：核心逻辑编译为静态库，便于测试和复用
+5. **内存高效**：使用8位整数存储游戏状态
+6. **丰富的视觉效果**：支持多种颜色主题
+7. **完整的测试**：包含自动化测试验证游戏逻辑
+8. **灵活的构建系统**：使用CMake支持多种编译器
+9. **版本控制友好**：合理的.gitignore配置
 
 ## 开发和扩展
+
+### 项目构建系统
+
+本项目使用CMake构建系统，具有以下特点：
+
+- **模块化编译**：游戏逻辑编译为静态库`libgame_lib.a`
+- **多目标支持**：同时生成游戏程序和测试程序
+- **编译器兼容**：支持GCC和Clang，启用严格的警告检查
+- **自动测试**：集成CTest测试框架
+- **打包支持**：支持CPack打包发布
+
+### Git工作流
+
+项目包含`.gitignore`文件，自动忽略：
+- `build/` - 构建输出目录
+- `.vscode/` - VS Code配置文件
+
+推荐的开发工作流：
+```bash
+# 克隆项目
+git clone https://github.com/YuhangNie/2048.c.git
+cd 2048.c
+
+# 构建项目
+cmake -B build
+make -C build
+
+# 运行测试
+./build/2048_test
+./build/2048 test
+
+# 开发完成后提交
+git add src/ include/ tests/ CMakeLists.txt
+git commit -m "your commit message"
+git push
+```
 
 ### 添加新功能
 
@@ -462,6 +518,8 @@ int main(int argc, char *argv[])
 2. **不同游戏板尺寸**：修改`SIZE`常量（需要相应调整界面）
 3. **保存/加载功能**：添加文件I/O操作保存游戏状态
 4. **最高分记录**：添加持久化存储记录历史最高分
+5. **新的移动算法**：扩展或优化`slideArray`函数
+6. **增强的用户界面**：改进终端显示效果或添加音效
 
 ### 性能优化
 
@@ -472,17 +530,42 @@ int main(int argc, char *argv[])
 
 ## 许可证
 
-本项目使用开源许可证，具体信息请查看LICENSE文件。
+本项目使用开源许可证，具体信息请查看[LICENSE](LICENSE)文件。
 
 ## 贡献
 
 欢迎提交问题报告、功能请求或代码贡献。请确保：
+
 1. 遵循现有的代码风格
-2. 添加适当的测试用例
+2. 在`tests/`目录中添加适当的测试用例
 3. 更新相关文档
+4. 确保`cmake`构建和测试通过
+
+### 提交流程
+
+```bash
+# Fork项目并克隆你的fork
+git clone https://github.com/YourUsername/2048.c.git
+
+# 创建功能分支
+git checkout -b feature/your-feature-name
+
+# 进行开发和测试
+cmake -B build && make -C build
+./build/2048_test
+
+# 提交更改
+git add .
+git commit -m "Add your feature"
+git push origin feature/your-feature-name
+
+# 创建Pull Request
+```
 
 ---
 
-**作者**：Maurits van der Schee  
-**版本**：1.0.3  
-**最后更新**：2025年8月28日
+**原作者**：Maurits van der Schee  
+**当前维护者**：YuhangNie  
+**项目版本**：1.0.3  
+**最后更新**：2025年8月28日  
+**仓库地址**：[https://github.com/YuhangNie/2048.c](https://github.com/YuhangNie/2048.c)
